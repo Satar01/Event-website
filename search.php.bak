@@ -1,0 +1,66 @@
+<?php
+session_start();
+     require_once("connect.php");
+	 require("sanitise.php");
+     include("navbar.php");
+?>
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <title>Search Data</title>
+</head>
+
+<body>
+    <h3>Use the Search bar to search your favourite movies</h3>
+    <br><br>
+    <div class="container my-5">
+        <table class="table">
+                <thead>
+                    <tr>
+                        <th scope="col">Event ID</th>
+                        <th scope="col">Event Name</th>
+                        <th scope="col">Event Date</th>
+                        <th scope="col">Event Location</th>
+                    </tr>
+                </thead>
+            <?php
+            // checking the form method type:
+            if(isset($_POST['submit_search'])){
+				//Sanitising search
+                $search = mysqli_real_escape_string($website_connect, $_POST['search']);
+				$inputs = $search
+				SanitiseInputs($inputs)
+                //$query = "select * from `movies` where id like '%$search%' or movie like '%$search%'";
+                $sql = "select *  from `searchbar` where event_name_search like '%$search%' or event_date_search like '%$search%'
+                or event_location_search like '%$search%'";
+                $result = mysqli_query($website_connect, $sql);
+                $result_check = mysqli_num_rows($result);
+                // check if executed:
+                if($result_check > 0){
+                    //echo "Data Found! ";
+                    if(mysqli_num_rows($result)>0){
+                        while($row = mysqli_fetch_assoc($result)){
+                        echo '<tbody>
+                        <tr>
+                        <td> '.$row['id'].'</td>
+                        <td> '.$row['event_name_search'].'</td>
+                        <td> '.$row['event_date_search'].'</td>
+                        <td> '.$row['event_location_search'].'</td>
+                        </tr>
+                        </tbody>';
+                    }
+                }else{
+                    echo "<h2 class=text-danger>Data Not Found! </h2>";
+                    header("home.php");
+                }
+            }
+        }    
+            ?>
+            </div>
+        </table>
+    </div>
+    <button class="btn btn-primary"><a href="home.php">Back To Main Page:</a></button>
+</body>
+</html>

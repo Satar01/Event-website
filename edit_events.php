@@ -1,0 +1,33 @@
+<?php
+session_start(); // this is to check the user's ID:
+     require_once("connect.php"); // this connects with the database:
+     require("sanitise.php"); // this is a sanitise file that prevents SQL/XSS injection attempts
+	 
+     if(isset($_POST['update']) || $_SERVER['REQUEST_METHOD'] = "POST"){
+         // Check the data submitted method in the form using session:
+        // let's declare some new variables here:
+        $id = $_POST['id'];
+        $event_name = $_POST['event_name'];
+        $event_date = $_POST['event_date'];
+        $event_location = $_POST['event_location'];
+        $event_description = $_POST['event_description'];
+		$inputs = array($id,$event_name,$event_date,$event_location,$event_description )
+		SanitiseInputs($inputs);
+        //$event_type = $_POST['event_type'];
+        //$event_time = $_POST['event_time'];
+        //$event_join_link = $_POST['event_join_link'];
+        // Try the update query here:
+        $sql_update = "update `events` set event_name= '.$event_name.', event_date='$event_date', event_location='.$event_location.',event_description='.$event_description.' where id=$id";
+        $result_check = mysqli_query($website_connect, $sql_update); // Save the query:
+        // Check if query worked:
+        if($result_check){
+            echo "Record Updated successfully! "; // positive message:
+            header("Location: browse_events.php");
+            die;
+        }else{
+            echo "Error Updating records" .mysqli_error($website_connect); // Error adding the require:
+            die; // to stop the code from continuing:
+        }
+    }
+   
+?>
